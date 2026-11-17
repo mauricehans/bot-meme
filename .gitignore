@@ -1,0 +1,32 @@
+
+# Variables d'environnement
+.env
+.env.*
+!.env.example
+
+# Dépendances
+node_modules/
+vendor/
+
+# Logs
+*.log
+logs/
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# IDE et éditeurs
+.vscode/
+.idea/
+
+# Fichiers temporaires
+tmp/
+temp/
+
+# Builds et distributions
+dist/
+build/
+
+# Cache
+.cache/

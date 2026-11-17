@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "root": "CRLr1jzz6X15TNnh8JwGjJqFmhc3j8gHKYw7YFxDefU5",
+  "depth": 10,
+  "minimum_lamports": 1000000000,
+  "minimum_sol": "1.000000000",
+  "snapshot_slot": 470300476,
+  "created_at": "2026-11-16T22:33:13.560950+00:00"
+}
