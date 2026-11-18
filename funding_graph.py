@@ -536,11 +536,40 @@ def export_results(folder, config, graph, transfers, outcome, rpc):
         },
     }))
 
-    network.write_html(
-        str(folder / "graphe.html"),
-        notebook=False,
-        open_browser=False,
-    )
+    html_path = folder / "graphe.html"
+
+    try:
+        html_content = network.generate_html(notebook=False)
+
+        if not isinstance(html_content, str) or not html_content.strip():
+            raise RuntimeError(
+                "PyVis a généré un document HTML vide."
+            )
+
+        temporary_path = folder / "graphe.html.tmp"
+        temporary_path.write_text(
+            html_content,
+            encoding="utf-8",
+        )
+
+        if temporary_path.stat().st_size == 0:
+            raise RuntimeError(
+                "Le fichier HTML temporaire est vide."
+            )
+
+        os.replace(temporary_path, html_path)
+
+        print(
+            f"HTML généré : {html_path}"
+            f"\nTaille : {html_path.stat().st_size:,} octets"
+        )
+
+    except Exception as error:
+        raise RuntimeError(
+            "La collecte et les exports JSON/CSV sont disponibles, "
+            "mais la génération HTML a échoué : "
+            f"{type(error).__name__}: {error}"
+        ) from error
 
 
 def main():
