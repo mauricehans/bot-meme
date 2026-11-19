@@ -1,0 +1,45 @@
+{% extends "tracker/base.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>{{ tracking.name }}</h2>
+    <p>Statut : {{ tracking.get_status_display }}</p>
+    <p>Adresse initiale : {{ tracking.root_address }}</p>
+    <p>Adresses suivies : {{ tracking.addresses.count }}</p>
+    <p>Transferts retenus : {{ tracking.transfers.count }}</p>
+
+    <a href="{% url 'tracking_graph' tracking.id %}">Voir le graphe</a>
+
+    <form method="post" action="{% url 'start_tracking' tracking.id %}">
+        {% csrf_token %}
+        <button type="submit">Démarrer</button>
+    </form>
+
+    <form method="post" action="{% url 'stop_tracking' tracking.id %}">
+        {% csrf_token %}
+        <button type="submit">Arrêter</button>
+    </form>
+</div>
+
+<div class="card">
+    <h2>Ajouter une adresse à suivre</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ address_form.as_p }}
+        <button type="submit">Ajouter</button>
+    </form>
+</div>
+
+<div class="card">
+    <h2>Adresses suivies</h2>
+    {% for address in tracking.addresses.all %}
+        <p>
+            <span class="{{ address.role }}">{{ address.get_role_display }}</span><br>
+            {{ address.address }}<br>
+            Envois retenus : {{ address.outgoing_count }}<br>
+            Total envoyé : {{ address.outgoing_lamports }} lamports<br>
+            <a href="{% url 'address_detail' tracking.id address.address %}">Voir la fiche</a>
+        </p>
+    {% endfor %}
+</div>
+{% endblock %}

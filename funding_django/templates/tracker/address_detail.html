@@ -1,0 +1,29 @@
+{% extends "tracker/base.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>Adresse suivie</h2>
+    <p>{{ address.address }}</p>
+    <p>Rôle selon le schéma : {{ address.get_role_display }}</p>
+    <p>Distance : {{ address.depth }}</p>
+    <p>Transactions examinées : {{ address.transactions_examined }}</p>
+    <p>Envois retenus : {{ address.outgoing_count }}</p>
+    <p>Total envoyé : {{ address.outgoing_lamports }} lamports</p>
+    <p>Entrées retenues : {{ address.incoming_count }}</p>
+    <p>Rattrapage terminé : {{ address.backfill_complete }}</p>
+    <a href="{% url 'tracking_detail' tracking.id %}">Retour au suivi</a>
+</div>
+
+<div class="card">
+    <h2>Transferts sortants retenus</h2>
+    {% for transfer in outgoing_transfers %}
+        <p>
+            {{ transfer.sol }} SOL → {{ transfer.destination }}<br>
+            Slot : {{ transfer.slot }}<br>
+            Signature : {{ transfer.signature }}
+        </p>
+    {% empty %}
+        <p>Aucun envoi retenu.</p>
+    {% endfor %}
+</div>
+{% endblock %}

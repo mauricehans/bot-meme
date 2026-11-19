@@ -1,0 +1,26 @@
+{% extends "tracker/base.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>Nouveau suivi</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Créer et démarrer</button>
+    </form>
+</div>
+
+<div class="card">
+    <h2>Mes suivis</h2>
+    {% for tracking in trackings %}
+        <p>
+            <strong>{{ tracking.name }}</strong><br>
+            Statut : {{ tracking.get_status_display }}<br>
+            Adresse initiale : {{ tracking.root_address }}<br>
+            <a href="{% url 'tracking_detail' tracking.id %}">Ouvrir</a>
+        </p>
+    {% empty %}
+        <p>Aucun suivi pour le moment.</p>
+    {% endfor %}
+</div>
+{% endblock %}

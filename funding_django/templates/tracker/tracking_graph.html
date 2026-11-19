@@ -1,0 +1,54 @@
+{% extends "tracker/base.html" %}
+
+{% block content %}
+<div class="card">
+    <h2>Graphe : {{ tracking.name }}</h2>
+    <p>
+        <span class="dev">DEV : bleu</span> ·
+        <span class="tampon">TAMPON : gris</span>
+    </p>
+    <canvas id="graph" width="1000" height="600" style="background:#0b1220;width:100%;"></canvas>
+</div>
+
+<script>
+const data = {{ graph_json|safe }};
+const canvas = document.getElementById("graph");
+const context = canvas.getContext("2d");
+const positions = new Map();
+
+data.nodes.forEach((node, index) => {
+    positions.set(node.id, {
+        x: 100 + (index % 6) * 150,
+        y: 100 + Math.floor(index / 6) * 120
+    });
+});
+
+function draw() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    data.edges.forEach(edge => {
+        const source = positions.get(edge.source);
+        const destination = positions.get(edge.destination);
+        if (!source || !destination) return;
+
+        context.beginPath();
+        context.moveTo(source.x, source.y);
+        context.lineTo(destination.x, destination.y);
+        context.strokeStyle = "#64748b";
+        context.stroke();
+    });
+
+    data.nodes.forEach(node => {
+        const position = positions.get(node.id);
+        context.beginPath();
+        context.arc(position.x, position.y, 20, 0, Math.PI * 2);
+        context.fillStyle = node.color;
+        context.fill();
+        context.fillStyle = "#e5e7eb";
+        context.fillText(node.label, position.x - 20, position.y + 35);
+    });
+}
+
+draw();
+</script>
+{% endblock %}
