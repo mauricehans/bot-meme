@@ -1,0 +1,88 @@
+FUNDING GRAPH — DEUX SCHEMAS DANS UN SEUL SCRIPT
+
+INSTALLATION
+Sauvegarder l'ancien funding_graph.py, puis le remplacer par celui fourni.
+Conserver le fichier .env prive existant avec HELIUS_API_KEY.
+Placer annotations_adresses.json a cote du script (ne pas ecraser vos annotations).
+python -m pip install -r requirements.txt
+python funding_graph.py
+
+CHOIX
+1 : nouvelle collecte des transferts sortants, affichage classique.
+2 : nouvelle collecte des memes transferts + annotations dev + chemins indirects.
+Aucun graphe preexistant n'est demande. Le choix est suivi de l'adresse Solana,
+de la profondeur et du seuil individuel (1 SOL par defaut).
+Profondeur 2 : analyse de la racine et des destinataires de niveau 1 ; niveau 2
+visible mais non explore. Pas de plafond total de wallets, transactions ou appels.
+La taille de page 1000 est une pagination, pas un plafond d'historique.
+Les quotas, droits de methode et limites du fournisseur restent applicables.
+
+ANNOTATIONS (schema 2)
+Le fichier livre contient {}. Toutes les adresses seront donc inconnues jusqu'a
+qualification. Ajouter des cles correspondant aux vraies adresses completes.
+Exemple de structure (remplacer l'adresse fictive avant utilisation) :
+{
+  "ADRESSE_SOLANA_COMPLETE": {
+    "dev_status": "dev_confirme",
+    "notes": "Creation verifiee manuellement",
+    "evidence": [{"mint": "...", "signature": "...", "source": "analyse_manuelle"}],
+    "coverage": {}
+  }
+}
+Statuts : dev_confirme, aucune_creation_observee, inconnu.
+L'absence d'annotation n'est pas une preuve d'absence de creation.
+La lecture de l'historique de transferts ne qualifie PAS une adresse de non-dev.
+Aucune detection automatique de createur de token n'est implementee.
+Une qualification dev n'est pas une qualification de fraudeur.
+
+SORTIES
+resultats_funding/schema1_... ou schema2_...
+- configuration.json : mode et snapshot.
+- progression.json : derniere page traitee (informatif).
+- graphe.json : donnees et statut de collecte.
+- transferts.csv : preuves individuelles.
+- graphe.html : vue complete.
+- visualisation.json : succes/echec distinct du statut de collecte.
+Schema 2 ajoute liens_devs.json, adresses_a_qualifier.json et, s'il existe des
+devs annotes, graphe_devs.html.
+Violet : dev confirme ; bleu : aucune creation observee ; gris : inconnu.
+Les liens indirects seuls sont en pointilles dans la synthese.
+
+CACHE ET REPRISE
+Un cache partage cache_helius_v2 permet de reutiliser les pages pour les requetes
+identiques, quel que soit le mode, avec le meme snapshot. Les dossiers historiques
+ne sont ni effaces ni importes automatiquement. Le nouveau cache a son propre format.
+Relancer avec les memes parametres propose de reprendre le meme snapshot (O)
+ou de demander un snapshot actuel (n). Les annotations sont rechargees au lancement.
+La reprise reconstruit le graphe depuis les pages cachees, puis poursuit la collecte.
+Ce n'est pas une reprise directe d'une file persistante. Ctrl+C exporte le partiel
+si l'interruption survient pendant la collecte. Ne pas interrompre l'export.
+Le cache est par page, pas un cache global par signature de transaction.
+
+SEMANTIQUE DU SCHEMA 2
+Le detail conserve tout le reseau admissible, pas seulement les devs.
+La synthese conserve les liens directs et UN plus court chemin indirect par paire
+de devs, sans dev confirme interieur. Les devs interieurs separent les segments.
+Les inconnus peuvent etre des devs non identifies : qualification signalee dans JSON.
+Le programme ne recherche pas tous les chemins possibles ; les alternatives
+restent visibles dans le graphe detaille. Pas de nombre fixe de tampons.
+La profondeur de collecte borne toujours ce qui peut etre decouvert.
+Pas de validation chronologique des chemins. Les slots et transaction_index
+sont conserves mais aucune attribution certaine des memes fonds n'est faite.
+
+LIMITES
+SOL natif : instructions System transfer et transferWithSeed uniquement,
+y compris instructions internes. Pas d'exhaustivite des changements de solde,
+pas de tokens SPL/wSOL, creations/fermetures de comptes non traitees.
+Le seuil est applique a chaque transfert avant aggregation par paire.
+getTransactionsForAddress est conserve comme dans le collecteur initial.
+Filtres serveur : succes et snapshot ; seuil de montant applique localement.
+Une erreur d'acces a la methode arrete la collecte avec statut incomplet.
+Tous les noeuds ne sont pas forcement des wallets personnels.
+Traitement en memoire et export HTML : pas de garantie pour graphes arbitrairement
+grands. Pas de serveur ni Neo4j, mais grands reseaux = RAM, disque et temps.
+
+TESTS
+Syntaxe compilee ; tests synthetiques des chemins directs/indirects, cycles,
+extraction externe/interne et pagination BFS. Pas de test reseau Helius ni de rendu
+PyVis dans votre environnement. Aucun secret fourni dans l'archive.

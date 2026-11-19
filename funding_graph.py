@@ -1,3 +1,6 @@
+"""Deux schémas : classique ou DEV -> N TAMPONS -> DEV.
+DEV bleu ; TAMPON gris. Rôles inférés selon un modèle, pas vérifiés par l'API.
+"""
 import csv
 import hashlib
 import html
@@ -300,6 +303,8 @@ def explore(rpc, config, cache_dir, graph, transfers):
     minimum = config["minimum_lamports"]
 
     graph.add_node(root, depth=0, status="a_analyser", transactions=0)
+    if config.get("schema", 1) == 2:
+        graph.nodes[root].update(role="dev", role_source="modele_utilisateur")
     queue = deque([root])
 
     while queue:
@@ -361,6 +366,13 @@ def explore(rpc, config, cache_dir, graph, transfers):
                                 transactions=0,
                             )
 
+                            if config.get("schema", 1) == 2:
+                                position = child_depth % (config["tampon_count"] + 1)
+                                graph.nodes[destination].update(
+                                    role="dev" if position == 0 else "tampon",
+                                    role_source="modele_utilisateur",
+                                    role_primary_position=position,
+                                )
                             if child_depth < max_depth:
                                 queue.append(destination)
 
@@ -406,7 +418,194 @@ def explore(rpc, config, cache_dir, graph, transfers):
             raise
 
 
+def ask_integer(label, default, minimum=0):
+    while True:
+        try:
+            value = int(input(f"{label} [{default}] : ").strip() or str(default))
+            if value >= minimum:
+                return value
+        except ValueError:
+            pass
+        print(f"Saisis un entier supérieur ou égal à {minimum}.")
+
+
+def choose_schema():
+    print("1. Schéma 1 : graphe classique des transferts sortants")
+    print("2. Schéma 2 : DEV -> N TAMPONS -> DEV (motif répété)")
+    while True:
+        choice = ask_integer("Schéma", 1, 1)
+        if choice in (1, 2):
+            return choice
+        print("Choisis 1 ou 2.")
+
+
+def pattern_text(count):
+    if count > 10:
+        return f"DEV -> {count} TAMPONS -> DEV (puis répétition)"
+    return " -> ".join(["DEV"] + [f"TAMPON {i}" for i in range(1, count + 1)] + ["DEV"])
+
+
+def apply_roles(graph, config):
+    """Classe selon la distance modulo (N+1), sans vérifier une activité dev.
+
+    Recherche les positions possibles sur les parcours orientés collectés,
+    cycles compris, jusqu'à la profondeur de collecte. Un état = adresse +
+    position dans le motif. Un même état n'est développé qu'une fois.
+    """
+    if config.get("schema", 1) != 2:
+        return
+    count = config["tampon_count"]
+    period = count + 1
+    root = config["root"]
+    if root not in graph:
+        return
+    distances = {(root, 0): 0}
+    queue = deque([(root, 0)])
+    positions_by_address = {root: {0: 0}}
+    while queue:
+        address, position = queue.popleft()
+        distance = distances[(address, position)]
+        if distance >= config["depth"]:
+            continue
+        next_position = (position + 1) % period
+        for target in graph.successors(address):
+            state = (target, next_position)
+            if state not in distances:
+                distances[state] = distance + 1
+                positions_by_address.setdefault(target, {})[next_position] = distance + 1
+                queue.append(state)
+    for address, attrs in graph.nodes(data=True):
+        available = positions_by_address.get(address, {})
+        if not available:
+            attrs.update(role="non_classe", role_conflict=False, role_candidates=[],
+                         role_positions={}, role_source="modele_utilisateur")
+            continue
+        primary = min(available, key=available.get)
+        candidates = sorted({"dev" if position == 0 else "tampon" for position in available})
+        attrs.update(
+            role="dev" if primary == 0 else "tampon",
+            role_primary_position=primary,
+            role_primary_distance=available[primary],
+            role_candidates=candidates,
+            role_conflict=len(candidates) > 1,
+            role_multiple_positions=len(available) > 1,
+            role_positions={str(k): v for k, v in sorted(available.items())},
+            role_source="modele_utilisateur",
+            role_rule=f"distance modulo {period} : 0 = dev ; 1 à {count} = tampon",
+            role_activity_verified=False,
+        )
+
+
+def style_node(address, attrs, config):
+    root = address == config["root"]
+    short = f"{address[:6]}…{address[-5:]}"
+    title = (
+        f"Adresse : {html.escape(address)}<br>"
+        f"Distance minimale : {attrs['depth']} transfert(s)<br>"
+        f"Collecte : {html.escape(attrs['status'])}<br>"
+        f"Transactions examinées : {attrs['transactions']}"
+    )
+    if config.get("schema", 1) == 1:
+        colors = {"analyse": "#22c55e", "a_analyser": "#94a3b8",
+                  "limite_profondeur": "#60a5fa", "en_cours": "#facc15",
+                  "interrompu": "#f59e0b", "erreur": "#ef4444"}
+        return dict(label=short, title=title, color="#a855f7" if root else colors[attrs["status"]],
+                    size=28 if root else 17)
+    role = attrs.get("role", "non_classe")
+    position = attrs.get("role_primary_position", 0)
+    conflict = attrs.get("role_conflict", False)
+    label_role = "DEV" if role == "dev" else f"TAMPON {position}" if role == "tampon" else "NON CLASSÉ"
+    label = f"{label_role}\n{short}" + ("\nCONFLIT" if conflict else "")
+    background = {"dev": "#2563eb", "tampon": "#9ca3af", "non_classe": "#64748b"}[role]
+    title += (
+        f"<br>Rôle selon schéma : {label_role}"
+        f"<br>Nombre de tampons par motif : {config['tampon_count']}"
+        "<br>Source du rôle : modèle utilisateur, pas information API"
+        "<br>Création de tokens : non vérifiée"
+    )
+    positions = attrs.get("role_positions", {})
+    if attrs.get("role_multiple_positions"):
+        details = "; ".join(("DEV" if key == "0" else f"TAMPON {key}") + f" : distance {dist}"
+                            for key, dist in positions.items())
+        title += "<br>Positions possibles : " + details
+    if conflict:
+        title += ("<br>CONFLIT : DEV et TAMPON possibles selon les parcours."
+                  "<br>Fond = rôle à la distance minimale ; cycles compris."
+                  "<br>Chronologie non vérifiée.")
+    border = "#f59e0b" if conflict else "#ffffff" if root else background
+    return dict(label=label, title=title, size=28 if root else 19,
+                shape="diamond" if root else "dot", borderWidth=4 if conflict or root else 1,
+                color={"background": background, "border": border,
+                       "highlight": {"background": background, "border": "#ffffff"},
+                       "hover": {"background": background, "border": "#ffffff"}})
+
+
+def legend(config, outcome):
+    text = (
+        '<aside style="background:#172033;color:#f8fafc;padding:14px 20px;'
+        'font:14px Arial;line-height:1.6;border:1px solid #475569">'
+        f'Schéma {config.get("schema", 1)} — Collecte : {html.escape(outcome)} — '
+        f'Seuil individuel : {html.escape(config["minimum_sol"])} SOL<br>'
+    )
+    if config.get("schema", 1) == 2:
+        text += (
+            '<span style="color:#60a5fa">DEV : bleu</span> | '
+            '<span style="color:#d1d5db">TAMPON : gris</span> | '
+            '<span style="color:#f59e0b">Bordure orange : conflit de rôle</span><br>'
+            f'Motif choisi : {html.escape(pattern_text(config["tampon_count"]))}<br>'
+            'La racine est supposée DEV. Rôles attribués selon votre modèle, '
+            'pas vérifiés par l’API. Le motif se répète tant que la profondeur le permet.<br>'
+            'En cas de conflit, le fond garde le rôle du parcours le plus court. '
+            'Cycles compris dans la profondeur demandée ; chronologie non vérifiée.<br>'
+            'Ni preuve de circulation des mêmes fonds, ni preuve de création de tokens '
+            'ou de contrôle commun des adresses.'
+        )
+    else:
+        text += 'Schéma classique : couleurs selon le statut de collecte.'
+    return text + '</aside>'
+
+
+def render_html(folder, config, graph, outcome):
+    network = Network(height="900px", width="100%", directed=True,
+                      bgcolor="#101827", font_color="#eeeeee", notebook=False,
+                      cdn_resources="in_line")
+    network.heading = html.escape(f"Schéma {config.get('schema', 1)} — Transferts SOL — {outcome}")
+    levels = {}
+    for address, attrs in graph.nodes(data=True):
+        levels.setdefault(attrs["depth"], []).append(address)
+    for depth, addresses in sorted(levels.items()):
+        for index, address in enumerate(sorted(addresses)):
+            network.add_node(address, **style_node(address, graph.nodes[address], config),
+                             x=(index - (len(addresses) - 1) / 2) * 240, y=depth * 190)
+    for source, destination, attrs in graph.edges(data=True):
+        amount = sol_text(attrs["lamports"])
+        network.add_edge(source, destination, arrows="to", label=f"{amount} SOL", width=2,
+                         title=f"{amount} SOL retenus<br>{attrs['count']} transfert(s)<br>Signatures dans le CSV")
+    network.set_options(json.dumps({
+        "layout": {"hierarchical": {"enabled": False}}, "physics": {"enabled": False},
+        "interaction": {"hover": True, "navigationButtons": True, "keyboard": True},
+        "edges": {"smooth": {"enabled": True, "type": "curvedCW", "roundness": 0.1},
+                  "font": {"size": 11, "color": "#f8fafc", "strokeWidth": 0}},
+    }))
+    document = network.generate_html(notebook=False)
+    if not isinstance(document, str) or not document.strip():
+        raise RuntimeError("PyVis a généré un HTML vide.")
+    body_start = document.lower().find("<body")
+    body_end = document.find(">", body_start) if body_start >= 0 else -1
+    if body_end < 0:
+        raise RuntimeError("HTML PyVis invalide : balise body absente.")
+    document = document[:body_end+1] + legend(config, outcome) + document[body_end+1:]
+    path = folder / "graphe.html"
+    temporary = folder / "graphe.html.tmp"
+    temporary.write_text(document, encoding="utf-8")
+    if temporary.stat().st_size == 0:
+        raise RuntimeError("HTML temporaire vide.")
+    os.replace(temporary, path)
+    print(f"HTML généré : {path}\nTaille : {path.stat().st_size:,} octets")
+
+
 def export_results(folder, config, graph, transfers, outcome, rpc):
+    apply_roles(graph, config)
     rows = sorted(
         transfers.values(),
         key=lambda row: (
@@ -454,122 +653,29 @@ def export_results(folder, config, graph, transfers, outcome, rpc):
     }
     save_json(folder / "graphe.json", report)
 
-    network = Network(
-        height="900px",
-        width="100%",
-        directed=True,
-        bgcolor="#101827",
-        font_color="#eeeeee",
-        notebook=False,
-        cdn_resources="in_line",
-    )
-    network.heading = html.escape(
-        f"Transferts SOL — {outcome} — "
-        f"seuil {config['minimum_sol']} SOL"
-    )
-
-    colors = {
-        "analyse": "#22c55e",
-        "a_analyser": "#94a3b8",
-        "limite_profondeur": "#60a5fa",
-        "en_cours": "#facc15",
-        "interrompu": "#f59e0b",
-        "erreur": "#ef4444",
-    }
-
-    for address, attributes in graph.nodes(data=True):
-        root = address == config["root"]
-        title = (
-            f"Adresse : {address}<br>"
-            f"Niveau : {attributes['depth']}<br>"
-            f"Statut : {attributes['status']}<br>"
-            f"Transactions examinées : {attributes['transactions']}"
-        )
-
-        network.add_node(
-            address,
-            label=f"{address[:6]}…{address[-5:]}",
-            title=title,
-            level=attributes["depth"],
-            color="#a855f7" if root else colors[attributes["status"]],
-            size=28 if root else 17,
-        )
-
-    for source, destination, attributes in graph.edges(data=True):
-        amount = sol_text(attributes["lamports"])
-        network.add_edge(
-            source,
-            destination,
-            arrows="to",
-            label=f"{amount} SOL",
-            title=(
-                f"{amount} SOL retenus<br>"
-                f"{attributes['count']} transfert(s)<br>"
-                "Détail des signatures dans le CSV"
-            ),
-            width=2,
-        )
-
-    network.set_options(json.dumps({
-        "layout": {
-            "hierarchical": {
-                "enabled": True,
-                "direction": "UD",
-                "sortMethod": "directed",
-                "levelSeparation": 180,
-                "nodeSpacing": 180,
-            }
-        },
-        "physics": {"enabled": False},
-        "interaction": {
-            "hover": True,
-            "navigationButtons": True,
-            "keyboard": True,
-        },
-        "edges": {
-            "smooth": {
-                "enabled": True,
-                "type": "cubicBezier",
-                "forceDirection": "vertical",
-            },
-            "font": {"size": 11, "align": "middle"},
-        },
-    }))
-
-    html_path = folder / "graphe.html"
-
+    if config.get("schema", 1) == 2:
+        roles = [{"address": address, "depth": attrs["depth"],
+                  **{k: v for k, v in attrs.items() if k.startswith("role")}}
+                 for address, attrs in graph.nodes(data=True)]
+        save_json(folder / "roles_schema2.json", roles)
+        conflicts = [r for r in roles if r["role_conflict"]]
+        save_json(folder / "conflits_roles.json", conflicts)
+        print(f"Motif : {pattern_text(config['tampon_count'])}")
+        print(f"DEV : {sum(r['role'] == 'dev' for r in roles)} | "
+              f"TAMPON : {sum(r['role'] == 'tampon' for r in roles)} | "
+              f"Conflits : {len(conflicts)}")
+    save_json(folder / "visualisation.json", {"status": "en_cours", "collection_outcome": outcome})
     try:
-        html_content = network.generate_html(notebook=False)
-
-        if not isinstance(html_content, str) or not html_content.strip():
-            raise RuntimeError(
-                "PyVis a généré un document HTML vide."
-            )
-
-        temporary_path = folder / "graphe.html.tmp"
-        temporary_path.write_text(
-            html_content,
-            encoding="utf-8",
-        )
-
-        if temporary_path.stat().st_size == 0:
-            raise RuntimeError(
-                "Le fichier HTML temporaire est vide."
-            )
-
-        os.replace(temporary_path, html_path)
-
-        print(
-            f"HTML généré : {html_path}"
-            f"\nTaille : {html_path.stat().st_size:,} octets"
-        )
-
+        render_html(folder, config, graph, outcome)
     except Exception as error:
-        raise RuntimeError(
-            "La collecte et les exports JSON/CSV sont disponibles, "
-            "mais la génération HTML a échoué : "
-            f"{type(error).__name__}: {error}"
-        ) from error
+        # Ne jamais présenter l'ancien HTML comme le rendu de la collecte actuelle.
+        old_html = folder / "graphe.html"
+        if old_html.exists():
+            os.replace(old_html, folder / "graphe_precedent.html")
+        save_json(folder / "visualisation.json", {"status": "erreur", "collection_outcome": outcome,
+                  "message": type(error).__name__})
+        raise RuntimeError("JSON/CSV disponibles, mais génération HTML échouée : " + type(error).__name__) from error
+    save_json(folder / "visualisation.json", {"status": "terminee", "collection_outcome": outcome})
 
 
 def main():
@@ -577,13 +683,19 @@ def main():
     if not api_key:
         raise ValueError("HELIUS_API_KEY manque dans le fichier .env.")
 
+    schema = choose_schema()
+    tampon_count = ask_integer("Nombre exact de tampons entre deux DEV", 1, 1) if schema == 2 else None
+    if schema == 2:
+        print("Motif suivi : " + pattern_text(tampon_count))
+        print("Les rôles sont inférés selon le modèle, sans vérification de l'activité dev.")
     root = input("Adresse Solana de départ : ").strip()
     if not valid_address(root):
         raise ValueError("Adresse Solana invalide.")
 
-    depth = int(input("Profondeur [2] : ").strip() or "2")
-    if depth < 0:
-        raise ValueError("La profondeur doit être positive ou nulle.")
+    default_depth = tampon_count + 1 if schema == 2 else 2
+    depth = ask_integer("Profondeur en nombre de transferts", default_depth, 0)
+    if schema == 2 and depth < tampon_count + 1:
+        print("Attention : profondeur insuffisante pour atteindre le DEV suivant dans le motif choisi.")
 
     raw_minimum = (
         input("Minimum par transfert sortant en SOL [1] : ")
@@ -603,11 +715,13 @@ def main():
     )
 
     identity = {
-        "schema": 1,
+        "schema": schema,
         "root": root,
         "depth": depth,
         "minimum_lamports": minimum_lamports,
     }
+    if schema == 2:
+        identity["tampon_count"] = tampon_count
     identifier = hashlib.sha256(
         json.dumps(identity, sort_keys=True).encode("utf-8")
     ).hexdigest()[:16]
@@ -622,7 +736,11 @@ def main():
     transfers = {}
 
     try:
+        reuse = False
         if manifest.exists():
+            answer = input("Reprendre le snapshot existant depuis le cache ? [O/n] : ").strip().lower()
+            reuse = answer in ("", "o", "oui", "y", "yes")
+        if reuse:
             config = read_json(manifest)
             print(
                 "\nExploration existante : reprise depuis le cache."

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Suivi funding — direct / historique</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0b1220;color:#e5e7eb;font:14px system-ui,Arial}header{padding:14px 18px;background:#111c30;border-bottom:1px solid #334155}h1{font-size:20px;margin:0 0 9px}button{background:#1e3a5f;color:white;border:1px solid #527298;border-radius:5px;padding:7px 12px;cursor:pointer;margin:4px 4px 4px 0}#summary,#health,#warning{margin-top:6px;line-height:1.5}#warning{color:#fbbf24}.blue{color:#60a5fa}.gray{color:#cbd5e1}main{display:grid;grid-template-columns:minmax(0,1fr) 340px;height:calc(100vh - 260px);min-height:450px}#panel{overflow:auto;padding:12px;background:#111c30;border-left:1px solid #334155}canvas{display:block;width:100%;height:100%;touch-action:none}#wrap{position:relative;min-width:0}#hint{position:absolute;bottom:8px;left:10px;color:#94a3b8;pointer-events:none}pre{white-space:pre-wrap;word-break:break-all;font:12px/1.5 monospace}.small{color:#a8b8cb;font-size:12px}#err{color:#fb7185} @media(max-width:850px){main{grid-template-columns:1fr;height:auto}#wrap{height:65vh}#panel{max-height:50vh;border:0}}
+</style></head><body>
+<!-- SNAPSHOT -->
+<header><h1>Graphe des transferts SOL</h1>
+<div><span class="blue">DEV : bleu</span> · <span class="gray">TAMPON : gris</span> · Bordure orange : conflit de rôle · Losange : départ</div>
+<div class="small">Rôles déduits du modèle utilisateur, pas confirmés par l’API. Ni preuve de fraude, ni preuve de contrôle commun ou de circulation des mêmes fonds.</div>
+<div id="summary">Chargement…</div><div id="health"></div><div id="warning">Chronologie conservatrice : les transferts successifs dans le même slot ne sont pas propagés ; ils restent à examiner.</div><div id="err"></div>
+<button id="fit">Centrer</button><button id="json">Exporter JSON</button><button id="csv">Exporter CSV</button>
+<span id="kind" class="small"></span></header>
+<main><section id="wrap"><canvas id="graph"></canvas><div id="hint">Molette : zoom · Glisser le fond : déplacer · Glisser une adresse : repositionner · Clic : détails</div></section><aside id="panel"><h3>Adresse sélectionnée</h3><pre id="details">Cliquer sur une adresse.</pre></aside></main>
+<script>
+'use strict';
+const canvas=document.getElementById('graph'),ctx=canvas.getContext('2d'),wrap=document.getElementById('wrap');
+let data=null, positions=new Map(), selected=null, scale=1, ox=0,oy=0,first=true, dragging=null,pan=null,dirty=true;
+let w=1,h=1,dpr=1;
+function resize(){dpr=window.devicePixelRatio||1;w=wrap.clientWidth;h=wrap.clientHeight;canvas.width=w*dpr;canvas.height=h*dpr;dirty=true;}
+new ResizeObserver(resize).observe(wrap);
+function txt(id,value){document.getElementById(id).textContent=value;}
+function update(snapshot){data=snapshot;const cfg=data.configuration, status=data.status||{};let levels=new Map();
+for(const n of data.nodes){if(!levels.has(n.depth))levels.set(n.depth,[]);levels.get(n.depth).push(n);}
+for(const [depth,nodes] of levels)nodes.forEach((n,i)=>{if(!positions.has(n.id))positions.set(n.id,{x:(i-(nodes.length-1)/2)*250,y:depth*180});});
+const motif=cfg.schema===2?`DEV → ${cfg.tampon_count} TAMPON(S) → DEV (répété)`:'classique, sans qualification DEV/TAMPON';
+txt('summary',`Session ${data.session||''} · ${cfg.mode} · Schéma ${cfg.schema} : ${motif} · ${data.nodes.length} adresses · ${data.transfers.length} transferts retenus · ${data.same_slot_unresolved.length} mouvements même-slot non résolus`);
+txt('health',`WebSocket : ${status.websocket||'—'} | adresses abonnées : ${status.subscribed_addresses||0}/${data.watched.length} | Rattrapage : ${status.backfill||'—'} | tentatives HTTP : ${status.http_attempts||0}`);
+txt('err',[status.error,status.websocket_error].filter(Boolean).join(' | '));
+txt('kind',window.SNAPSHOT?'Photographie hors ligne — pas de suivi en direct.':'Interface locale : actualisation chaque seconde.');
+if(first&&data.nodes.length){fit();first=false;}showDetails();dirty=true;
+}
+function fit(){if(!data||!data.nodes.length)return;const points=data.nodes.map(n=>positions.get(n.id)),xs=points.map(p=>p.x),ys=points.map(p=>p.y);const minx=Math.min(...xs),maxx=Math.max(...xs),miny=Math.min(...ys),maxy=Math.max(...ys);scale=Math.min(1.3,(w-120)/Math.max(180,maxx-minx+100),(h-110)/Math.max(180,maxy-miny+90));scale=Math.max(.015,scale);ox=w/2-(minx+maxx)/2*scale;oy=h/2-(miny+maxy)/2*scale;dirty=true;}
+function showDetails(){if(!data||!selected)return;const n=data.nodes.find(x=>x.id===selected);if(!n)return;const incoming=data.transfers.filter(t=>t.destination===selected),outgoing=data.transfers.filter(t=>t.source===selected);txt('details',JSON.stringify({...n,incoming,outgoing},null,2));}
+function draw(){requestAnimationFrame(draw);if(!dirty)return;dirty=false;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);if(!data)return;ctx.translate(ox,oy);ctx.scale(scale,scale);
+ctx.font='11px system-ui';ctx.textAlign='center';
+for(const e of data.edges){const a=positions.get(e.source),b=positions.get(e.destination);if(!a||!b)continue;let dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1;const ux=dx/len,uy=dy/len;const start={x:a.x+ux*24,y:a.y+uy*24},end={x:b.x-ux*26,y:b.y-uy*26};ctx.strokeStyle='#64748b';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(start.x,start.y);ctx.lineTo(end.x,end.y);ctx.stroke();ctx.fillStyle='#94a3b8';ctx.beginPath();ctx.moveTo(end.x,end.y);ctx.lineTo(end.x-ux*11-uy*5,end.y-uy*11+ux*5);ctx.lineTo(end.x-ux*11+uy*5,end.y-uy*11-ux*5);ctx.closePath();ctx.fill();ctx.fillStyle='#d1d5db';ctx.fillText(e.sol+' SOL',(a.x+b.x)/2+12,(a.y+b.y)/2-7);}
+for(const n of data.nodes){const p=positions.get(n.id);ctx.beginPath();if(n.root){ctx.moveTo(p.x,p.y-25);ctx.lineTo(p.x+25,p.y);ctx.lineTo(p.x,p.y+25);ctx.lineTo(p.x-25,p.y);ctx.closePath();}else ctx.arc(p.x,p.y,20,0,Math.PI*2);ctx.fillStyle=n.color;ctx.fill();ctx.strokeStyle=n.conflict?'#f59e0b':selected===n.id?'#fff':'#475569';ctx.lineWidth=n.conflict||selected===n.id?4:1.3;ctx.stroke();ctx.fillStyle='#f8fafc';ctx.font='bold 12px system-ui';ctx.fillText(n.label+(n.conflict?' · CONFLIT':''),p.x,p.y+43);ctx.font='11px monospace';ctx.fillStyle='#cbd5e1';ctx.fillText(n.id.length>16?n.id.slice(0,6)+'…'+n.id.slice(-5):n.id,p.x,p.y+59);}}
+function point(ev){const r=canvas.getBoundingClientRect();return {x:(ev.clientX-r.left-ox)/scale,y:(ev.clientY-r.top-oy)/scale};}
+function hit(p){if(!data)return null;for(let i=data.nodes.length-1;i>=0;i--){let n=data.nodes[i],q=positions.get(n.id);if(Math.hypot(p.x-q.x,p.y-q.y)<28)return n;}return null;}
+canvas.addEventListener('pointerdown',ev=>{canvas.setPointerCapture(ev.pointerId);const p=point(ev),n=hit(p);if(n){selected=n.id;dragging=n.id;showDetails();}else{pan={x:ev.clientX,y:ev.clientY,ox,oy};}dirty=true;});
+canvas.addEventListener('pointermove',ev=>{if(dragging){positions.set(dragging,point(ev));dirty=true;}else if(pan){ox=pan.ox+ev.clientX-pan.x;oy=pan.oy+ev.clientY-pan.y;dirty=true;}else{const n=hit(point(ev));canvas.title=n?`${n.id}\n${n.label}\nDistance ${n.depth}\nRôle selon modèle utilisateur${n.conflict?'\nCONFLIT DE RÔLE':''}`:'';}});
+function release(){dragging=null;pan=null;}canvas.addEventListener('pointerup',release);canvas.addEventListener('pointercancel',release);
+canvas.addEventListener('wheel',ev=>{ev.preventDefault();let before=point(ev);const r=canvas.getBoundingClientRect();scale=Math.min(4,Math.max(.01,scale*Math.exp(-ev.deltaY*.001)));ox=ev.clientX-r.left-before.x*scale;oy=ev.clientY-r.top-before.y*scale;dirty=true;},{passive:false});
+document.getElementById('fit').onclick=fit;
+function download(name,text,type){const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+document.getElementById('json').onclick=()=>{if(data)download('graphe.json',JSON.stringify(data,null,2),'application/json');};
+document.getElementById('csv').onclick=()=>{if(!data)return;const keys=['transfer_id','source','destination','lamports','sol','slot','signature','transaction_index','instruction_position','timestamp'];const esc=v=>'"'+String(v??'').replaceAll('"','""')+'"';download('transferts.csv','\ufeff'+[keys.join(','),...data.transfers.map(t=>keys.map(k=>esc(t[k])).join(','))].join('\r\n'),'text/csv');};
+async function poll(){try{const response=await fetch('/api/graph',{cache:'no-store'});if(!response.ok)throw Error('HTTP '+response.status);update(await response.json());}catch(e){txt('err','Interface déconnectée du programme Python : '+e.message);}finally{setTimeout(poll,1000);}}
+resize();draw();if(window.SNAPSHOT)update(window.SNAPSHOT);else poll();
+</script></body></html>

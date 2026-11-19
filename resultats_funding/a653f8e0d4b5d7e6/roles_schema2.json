@@ -1,0 +1,178 @@
+[
+  {
+    "address": "68airfyMzjLujMUEtV7VHax3eFrQREsgBw8DMM6iN7xq",
+    "role": "dev",
+    "role_source": "inference_schema_utilisateur",
+    "role_candidates": [
+      "dev"
+    ],
+    "role_distances": {
+      "dev": 0
+    },
+    "role_conflict": false,
+    "role_rule": "distance paire = dev ; distance impaire = tampon",
+    "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine",
+    "depth": 0,
+    "collection_status": "analyse"
+  },
+  {
+    "address": "GKLg1gFKK9q5amRQMtMYCZEQQcPEqVpiDrWNz9ZQBWc4",
+    "role": "tampon",
+    "role_source": "inference_schema_utilisateur",
+    "role_candidates": [
+      "tampon"
+    ],
+    "role_distances": {
+      "tampon": 1
+    },
+    "role_conflict": false,
+    "role_rule": "distance paire = dev ; distance impaire = tampon",
+    "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine",
+    "depth": 1,
+    "collection_status": "analyse"
+  },
+  {
+    "address": "9GSUMQeutnxQTYVpxXJDNhjbuDZSP4zeFUQysA6ZmorK",
+    "role": "dev",
+    "role_source": "inference_schema_utilisateur",
+    "role_candidates": [
+      "dev"
+    ],
+    "role_distances": {
+      "dev": 2
+    },
+    "role_conflict": false,
+    "role_rule": "distance paire = dev ; distance impaire = tampon",
+    "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine",
+    "depth": 2,
+    "collection_status": "analyse"
+  },
+  {
+    "address": "12ctL2sKQAVJagithinmnM3FdKamvMk8PhYM4QZnAwAS",
+    "role": "tampon",
+    "role_source": "inference_schema_utilisateur",
+    "role_candidates": [
+      "tampon"
+    ],
+    "role_distances": {
+      "tampon": 3
+    },
+    "role_conflict": false,
+    "role_rule": "distance paire = dev ; distance impaire = tampon",
+    "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine",
+    "depth": 3,
+    "collection_status": "analyse"
+  },
+  {
+    "address": "FEaR8JkobuPbL1MpMxmkSEk5wadDfSzyZ4uUncqTV71D",
+    "role": "dev",
+    "role_source": "inference_schema_utilisateur",
+    "role_candidates": [
+      "dev"
+    ],
+    "role_distances": {
+      "dev": 4
+    },
+    "role_conflict": false,
+    "role_rule": "distance paire = dev ; distance impaire = tampon",
+    "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine",
+    "depth": 4,
+    "collection_status": "analyse"
+  },
+  {
+    "address": "85G4ujVHUUt1XoM7w4xyp67hzuaf8SSku4ot3r5M38Bo",
+    "role": "tampon",
+    "role_source": "inference_schema_utilisateur",
+    "role_candidates": [
+      "tampon"
+    ],
+    "role_distances": {
+      "tampon": 5
+    },
+    "role_conflict": false,
+    "role_rule": "distance paire = dev ; distance impaire = tampon",
+    "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine",
+    "depth": 5,
+    "collection_status": "analyse"
+  },
+  {
+    "address": "E5v4qtVabJaPMUNBFFxL4JJtuvHD4mTvV2mJEHxwbD3Q",
+    "role": "dev",
+    "role_source": "inference_schema_utilisateur",
+    "role_candidates": [
+      "dev"
+    ],
+    "role_distances": {
+      "dev": 6
+    },
+    "role_conflict": false,
+    "role_rule": "distance paire = dev ; distance impaire = tampon",
+    "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine",
+    "depth": 6,
+    "collection_status": "analyse"
+  },
+  {
+    "address": "E62QmAjKv6tyTziXeHsAtczwNxpzJjTbkmdAasHfduPx",
+    "role": "tampon",
+    "role_source": "inference_schema_utilisateur",
+    "role_candidates": [
+      "tampon"
+    ],
+    "role_distances": {
+      "tampon": 7
+    },
+    "role_conflict": false,
+    "role_rule": "distance paire = dev ; distance impaire = tampon",
+    "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine",
+    "depth": 7,
+    "collection_status": "analyse"
+  },
+  {
+    "address": "386gN9eEFFMeMEA9tnZ5GjWe2EJ7dutDZP6ptKekUeBM",
+    "role": "dev",
+    "role_source": "inference_schema_utilisateur",
+    "role_candidates": [
+      "dev"
+    ],
+    "role_distances": {
+      "dev": 8
+    },
+    "role_conflict": false,
+    "role_rule": "distance paire = dev ; distance impaire = tampon",
+    "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine",
+    "depth": 8,
+    "collection_status": "analyse"
+  },
+  {
+    "address": "Df8iRwQUJUA4vnRrhDRcntee51JcCsxHH5ebj6MMsp8h",
+    "role": "tampon",
+    "role_source": "inference_schema_utilisateur",
+    "role_candidates": [
+      "tampon"
+    ],
+    "role_distances": {
+      "tampon": 9
+    },
+    "role_conflict": false,
+    "role_rule": "distance paire = dev ; distance impaire = tampon",
+    "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine",
+    "depth": 9,
+    "collection_status": "analyse"
+  },
+  {
+    "address": "614vb7eQjKS1siVCiB79z45DXeah3VoFDqQzxBLEda2f",
+    "role": "dev",
+    "role_source": "inference_schema_utilisateur",
+    "role_candidates": [
+      "dev"
+    ],
+    "role_distances": {
+      "dev": 10
+    },
+    "role_conflict": false,
+    "role_rule": "distance paire = dev ; distance impaire = tampon",
+    "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine",
+    "depth": 10,
+    "collection_status": "limite_profondeur"
+  }
+]

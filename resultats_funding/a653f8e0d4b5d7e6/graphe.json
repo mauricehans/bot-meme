@@ -1,0 +1,398 @@
+{
+  "configuration": {
+    "schema": 2,
+    "root": "68airfyMzjLujMUEtV7VHax3eFrQREsgBw8DMM6iN7xq",
+    "depth": 10,
+    "minimum_lamports": 1000000000,
+    "minimum_sol": "1.000000000",
+    "snapshot_slot": 470963810,
+    "created_at": "2026-11-18T14:12:39.819244+00:00"
+  },
+  "outcome": "termine",
+  "exported_at": "2026-11-18T14:12:45.863763+00:00",
+  "http_attempts_this_launch": 21,
+  "cached_pages_this_launch": 0,
+  "nodes": [
+    {
+      "id": "68airfyMzjLujMUEtV7VHax3eFrQREsgBw8DMM6iN7xq",
+      "depth": 0,
+      "status": "analyse",
+      "transactions": 11,
+      "role": "dev",
+      "role_source": "inference_schema_utilisateur",
+      "role_candidates": [
+        "dev"
+      ],
+      "role_distances": {
+        "dev": 0
+      },
+      "role_conflict": false,
+      "role_rule": "distance paire = dev ; distance impaire = tampon",
+      "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine"
+    },
+    {
+      "id": "GKLg1gFKK9q5amRQMtMYCZEQQcPEqVpiDrWNz9ZQBWc4",
+      "depth": 1,
+      "status": "analyse",
+      "transactions": 2,
+      "role": "tampon",
+      "role_source": "inference_schema_utilisateur",
+      "role_candidates": [
+        "tampon"
+      ],
+      "role_distances": {
+        "tampon": 1
+      },
+      "role_conflict": false,
+      "role_rule": "distance paire = dev ; distance impaire = tampon",
+      "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine"
+    },
+    {
+      "id": "9GSUMQeutnxQTYVpxXJDNhjbuDZSP4zeFUQysA6ZmorK",
+      "depth": 2,
+      "status": "analyse",
+      "transactions": 15,
+      "role": "dev",
+      "role_source": "inference_schema_utilisateur",
+      "role_candidates": [
+        "dev"
+      ],
+      "role_distances": {
+        "dev": 2
+      },
+      "role_conflict": false,
+      "role_rule": "distance paire = dev ; distance impaire = tampon",
+      "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine"
+    },
+    {
+      "id": "12ctL2sKQAVJagithinmnM3FdKamvMk8PhYM4QZnAwAS",
+      "depth": 3,
+      "status": "analyse",
+      "transactions": 2,
+      "role": "tampon",
+      "role_source": "inference_schema_utilisateur",
+      "role_candidates": [
+        "tampon"
+      ],
+      "role_distances": {
+        "tampon": 3
+      },
+      "role_conflict": false,
+      "role_rule": "distance paire = dev ; distance impaire = tampon",
+      "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine"
+    },
+    {
+      "id": "FEaR8JkobuPbL1MpMxmkSEk5wadDfSzyZ4uUncqTV71D",
+      "depth": 4,
+      "status": "analyse",
+      "transactions": 19,
+      "role": "dev",
+      "role_source": "inference_schema_utilisateur",
+      "role_candidates": [
+        "dev"
+      ],
+      "role_distances": {
+        "dev": 4
+      },
+      "role_conflict": false,
+      "role_rule": "distance paire = dev ; distance impaire = tampon",
+      "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine"
+    },
+    {
+      "id": "85G4ujVHUUt1XoM7w4xyp67hzuaf8SSku4ot3r5M38Bo",
+      "depth": 5,
+      "status": "analyse",
+      "transactions": 2,
+      "role": "tampon",
+      "role_source": "inference_schema_utilisateur",
+      "role_candidates": [
+        "tampon"
+      ],
+      "role_distances": {
+        "tampon": 5
+      },
+      "role_conflict": false,
+      "role_rule": "distance paire = dev ; distance impaire = tampon",
+      "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine"
+    },
+    {
+      "id": "E5v4qtVabJaPMUNBFFxL4JJtuvHD4mTvV2mJEHxwbD3Q",
+      "depth": 6,
+      "status": "analyse",
+      "transactions": 13,
+      "role": "dev",
+      "role_source": "inference_schema_utilisateur",
+      "role_candidates": [
+        "dev"
+      ],
+      "role_distances": {
+        "dev": 6
+      },
+      "role_conflict": false,
+      "role_rule": "distance paire = dev ; distance impaire = tampon",
+      "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine"
+    },
+    {
+      "id": "E62QmAjKv6tyTziXeHsAtczwNxpzJjTbkmdAasHfduPx",
+      "depth": 7,
+      "status": "analyse",
+      "transactions": 2,
+      "role": "tampon",
+      "role_source": "inference_schema_utilisateur",
+      "role_candidates": [
+        "tampon"
+      ],
+      "role_distances": {
+        "tampon": 7
+      },
+      "role_conflict": false,
+      "role_rule": "distance paire = dev ; distance impaire = tampon",
+      "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine"
+    },
+    {
+      "id": "386gN9eEFFMeMEA9tnZ5GjWe2EJ7dutDZP6ptKekUeBM",
+      "depth": 8,
+      "status": "analyse",
+      "transactions": 18,
+      "role": "dev",
+      "role_source": "inference_schema_utilisateur",
+      "role_candidates": [
+        "dev"
+      ],
+      "role_distances": {
+        "dev": 8
+      },
+      "role_conflict": false,
+      "role_rule": "distance paire = dev ; distance impaire = tampon",
+      "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine"
+    },
+    {
+      "id": "Df8iRwQUJUA4vnRrhDRcntee51JcCsxHH5ebj6MMsp8h",
+      "depth": 9,
+      "status": "analyse",
+      "transactions": 2,
+      "role": "tampon",
+      "role_source": "inference_schema_utilisateur",
+      "role_candidates": [
+        "tampon"
+      ],
+      "role_distances": {
+        "tampon": 9
+      },
+      "role_conflict": false,
+      "role_rule": "distance paire = dev ; distance impaire = tampon",
+      "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine"
+    },
+    {
+      "id": "614vb7eQjKS1siVCiB79z45DXeah3VoFDqQzxBLEda2f",
+      "depth": 10,
+      "status": "limite_profondeur",
+      "transactions": 0,
+      "role": "dev",
+      "role_source": "inference_schema_utilisateur",
+      "role_candidates": [
+        "dev"
+      ],
+      "role_distances": {
+        "dev": 10
+      },
+      "role_conflict": false,
+      "role_rule": "distance paire = dev ; distance impaire = tampon",
+      "role_depth_basis": "plus_court_parcours_oriente_depuis_la_racine"
+    }
+  ],
+  "edges": [
+    {
+      "source": "68airfyMzjLujMUEtV7VHax3eFrQREsgBw8DMM6iN7xq",
+      "destination": "GKLg1gFKK9q5amRQMtMYCZEQQcPEqVpiDrWNz9ZQBWc4",
+      "lamports": 76757039110,
+      "count": 1,
+      "same_primary_role": false
+    },
+    {
+      "source": "GKLg1gFKK9q5amRQMtMYCZEQQcPEqVpiDrWNz9ZQBWc4",
+      "destination": "9GSUMQeutnxQTYVpxXJDNhjbuDZSP4zeFUQysA6ZmorK",
+      "lamports": 76757032577,
+      "count": 1,
+      "same_primary_role": false
+    },
+    {
+      "source": "9GSUMQeutnxQTYVpxXJDNhjbuDZSP4zeFUQysA6ZmorK",
+      "destination": "12ctL2sKQAVJagithinmnM3FdKamvMk8PhYM4QZnAwAS",
+      "lamports": 79257476585,
+      "count": 1,
+      "same_primary_role": false
+    },
+    {
+      "source": "12ctL2sKQAVJagithinmnM3FdKamvMk8PhYM4QZnAwAS",
+      "destination": "FEaR8JkobuPbL1MpMxmkSEk5wadDfSzyZ4uUncqTV71D",
+      "lamports": 79257469932,
+      "count": 1,
+      "same_primary_role": false
+    },
+    {
+      "source": "FEaR8JkobuPbL1MpMxmkSEk5wadDfSzyZ4uUncqTV71D",
+      "destination": "85G4ujVHUUt1XoM7w4xyp67hzuaf8SSku4ot3r5M38Bo",
+      "lamports": 80941345288,
+      "count": 1,
+      "same_primary_role": false
+    },
+    {
+      "source": "85G4ujVHUUt1XoM7w4xyp67hzuaf8SSku4ot3r5M38Bo",
+      "destination": "E5v4qtVabJaPMUNBFFxL4JJtuvHD4mTvV2mJEHxwbD3Q",
+      "lamports": 80941339154,
+      "count": 1,
+      "same_primary_role": false
+    },
+    {
+      "source": "E5v4qtVabJaPMUNBFFxL4JJtuvHD4mTvV2mJEHxwbD3Q",
+      "destination": "E62QmAjKv6tyTziXeHsAtczwNxpzJjTbkmdAasHfduPx",
+      "lamports": 83681334003,
+      "count": 1,
+      "same_primary_role": false
+    },
+    {
+      "source": "E62QmAjKv6tyTziXeHsAtczwNxpzJjTbkmdAasHfduPx",
+      "destination": "386gN9eEFFMeMEA9tnZ5GjWe2EJ7dutDZP6ptKekUeBM",
+      "lamports": 83681323748,
+      "count": 1,
+      "same_primary_role": false
+    },
+    {
+      "source": "386gN9eEFFMeMEA9tnZ5GjWe2EJ7dutDZP6ptKekUeBM",
+      "destination": "Df8iRwQUJUA4vnRrhDRcntee51JcCsxHH5ebj6MMsp8h",
+      "lamports": 85666998718,
+      "count": 1,
+      "same_primary_role": false
+    },
+    {
+      "source": "Df8iRwQUJUA4vnRrhDRcntee51JcCsxHH5ebj6MMsp8h",
+      "destination": "614vb7eQjKS1siVCiB79z45DXeah3VoFDqQzxBLEda2f",
+      "lamports": 85666993715,
+      "count": 1,
+      "same_primary_role": false
+    }
+  ],
+  "transfers": [
+    {
+      "transfer_id": "3mLJXdGrvVmrCrwic41ZTW4oWdXLDVcUWi3ZsQfTsNYEmmcpCz9493xzovZPKjififPnppHqUcqq1oJJxGJnYj3e:outer:2",
+      "source": "68airfyMzjLujMUEtV7VHax3eFrQREsgBw8DMM6iN7xq",
+      "destination": "GKLg1gFKK9q5amRQMtMYCZEQQcPEqVpiDrWNz9ZQBWc4",
+      "lamports": 76757039110,
+      "sol": "76.757039110",
+      "timestamp": 1793897644,
+      "date_utc": "2026-11-05T16:54:04+00:00",
+      "slot": 465780072,
+      "signature": "3mLJXdGrvVmrCrwic41ZTW4oWdXLDVcUWi3ZsQfTsNYEmmcpCz9493xzovZPKjififPnppHqUcqq1oJJxGJnYj3e",
+      "instruction_position": "outer:2"
+    },
+    {
+      "transfer_id": "3XW6bdQ3nmwKpRSFfbAEWiFipqHAbH1iNmZ4XLrvQaabaVqcSuvyUBGhNe3RAxHMFhAVEWgqD47ycMznZY263y1Z:outer:2",
+      "source": "GKLg1gFKK9q5amRQMtMYCZEQQcPEqVpiDrWNz9ZQBWc4",
+      "destination": "9GSUMQeutnxQTYVpxXJDNhjbuDZSP4zeFUQysA6ZmorK",
+      "lamports": 76757032577,
+      "sol": "76.757032577",
+      "timestamp": 1793897644,
+      "date_utc": "2026-11-05T16:54:04+00:00",
+      "slot": 465780073,
+      "signature": "3XW6bdQ3nmwKpRSFfbAEWiFipqHAbH1iNmZ4XLrvQaabaVqcSuvyUBGhNe3RAxHMFhAVEWgqD47ycMznZY263y1Z",
+      "instruction_position": "outer:2"
+    },
+    {
+      "transfer_id": "5krYQxzDX6U6P1qHJ4T7nTsTZwWwsWmHmUwaz889vuUirUJHRPVwBtw9admvPo3kEGw79NhiciDgzc77TMn3zN9U:outer:2",
+      "source": "9GSUMQeutnxQTYVpxXJDNhjbuDZSP4zeFUQysA6ZmorK",
+      "destination": "12ctL2sKQAVJagithinmnM3FdKamvMk8PhYM4QZnAwAS",
+      "lamports": 79257476585,
+      "sol": "79.257476585",
+      "timestamp": 1793897694,
+      "date_utc": "2026-11-05T16:54:54+00:00",
+      "slot": 465780311,
+      "signature": "5krYQxzDX6U6P1qHJ4T7nTsTZwWwsWmHmUwaz889vuUirUJHRPVwBtw9admvPo3kEGw79NhiciDgzc77TMn3zN9U",
+      "instruction_position": "outer:2"
+    },
+    {
+      "transfer_id": "2w6rycSTBQ9knMSXhTW9dSuteZmBDpNm7KPu32Umx4yXvDRckUVM6QUqUtteKFB7xxWXTVju3cD8GTVB9i4zwQau:outer:2",
+      "source": "12ctL2sKQAVJagithinmnM3FdKamvMk8PhYM4QZnAwAS",
+      "destination": "FEaR8JkobuPbL1MpMxmkSEk5wadDfSzyZ4uUncqTV71D",
+      "lamports": 79257469932,
+      "sol": "79.257469932",
+      "timestamp": 1793897694,
+      "date_utc": "2026-11-05T16:54:54+00:00",
+      "slot": 465780312,
+      "signature": "2w6rycSTBQ9knMSXhTW9dSuteZmBDpNm7KPu32Umx4yXvDRckUVM6QUqUtteKFB7xxWXTVju3cD8GTVB9i4zwQau",
+      "instruction_position": "outer:2"
+    },
+    {
+      "transfer_id": "3zDGs3MSxQewnthLVyrxYshQqmUYNgVyZEoqxxzvGnrMy5yNrYMgNVuhkPGxhtFbCfAbwvsBCtT4s3GVBFeSZQaY:outer:2",
+      "source": "FEaR8JkobuPbL1MpMxmkSEk5wadDfSzyZ4uUncqTV71D",
+      "destination": "85G4ujVHUUt1XoM7w4xyp67hzuaf8SSku4ot3r5M38Bo",
+      "lamports": 80941345288,
+      "sol": "80.941345288",
+      "timestamp": 1793897773,
+      "date_utc": "2026-11-05T16:56:13+00:00",
+      "slot": 465780686,
+      "signature": "3zDGs3MSxQewnthLVyrxYshQqmUYNgVyZEoqxxzvGnrMy5yNrYMgNVuhkPGxhtFbCfAbwvsBCtT4s3GVBFeSZQaY",
+      "instruction_position": "outer:2"
+    },
+    {
+      "transfer_id": "2UVdRAJfCCJ7dPjmvUfU3SbXqeT3ceLxuxoKUXfYfgTvFqCCFiKDwCkygypvgDMochFr1q5JSVciV69FiqzUgegM:outer:2",
+      "source": "85G4ujVHUUt1XoM7w4xyp67hzuaf8SSku4ot3r5M38Bo",
+      "destination": "E5v4qtVabJaPMUNBFFxL4JJtuvHD4mTvV2mJEHxwbD3Q",
+      "lamports": 80941339154,
+      "sol": "80.941339154",
+      "timestamp": 1793897773,
+      "date_utc": "2026-11-05T16:56:13+00:00",
+      "slot": 465780687,
+      "signature": "2UVdRAJfCCJ7dPjmvUfU3SbXqeT3ceLxuxoKUXfYfgTvFqCCFiKDwCkygypvgDMochFr1q5JSVciV69FiqzUgegM",
+      "instruction_position": "outer:2"
+    },
+    {
+      "transfer_id": "3UgakMpzbPAezQ9aqqsAYULqvSrWzkPxGL8dY59714iiDUWT9HfkZrSDLrq7ZpsBii5DqbXhjD2Lfm8uuuvDq3Qc:outer:2",
+      "source": "E5v4qtVabJaPMUNBFFxL4JJtuvHD4mTvV2mJEHxwbD3Q",
+      "destination": "E62QmAjKv6tyTziXeHsAtczwNxpzJjTbkmdAasHfduPx",
+      "lamports": 83681334003,
+      "sol": "83.681334003",
+      "timestamp": 1793897913,
+      "date_utc": "2026-11-05T16:58:33+00:00",
+      "slot": 465781344,
+      "signature": "3UgakMpzbPAezQ9aqqsAYULqvSrWzkPxGL8dY59714iiDUWT9HfkZrSDLrq7ZpsBii5DqbXhjD2Lfm8uuuvDq3Qc",
+      "instruction_position": "outer:2"
+    },
+    {
+      "transfer_id": "4k5UMbFnxjVrFUmAPPvx3kJaDbb2WefmYaSjLa6mR3WpyytuapUU3d7dkP3gK73LKms6RSvZbznfbLAbUiG1UCPa:outer:2",
+      "source": "E62QmAjKv6tyTziXeHsAtczwNxpzJjTbkmdAasHfduPx",
+      "destination": "386gN9eEFFMeMEA9tnZ5GjWe2EJ7dutDZP6ptKekUeBM",
+      "lamports": 83681323748,
+      "sol": "83.681323748",
+      "timestamp": 1793897913,
+      "date_utc": "2026-11-05T16:58:33+00:00",
+      "slot": 465781345,
+      "signature": "4k5UMbFnxjVrFUmAPPvx3kJaDbb2WefmYaSjLa6mR3WpyytuapUU3d7dkP3gK73LKms6RSvZbznfbLAbUiG1UCPa",
+      "instruction_position": "outer:2"
+    },
+    {
+      "transfer_id": "5oiha9jrzEGn3p7YTFHfUzrGTv2ajCGzasX8kCxzZNV3jeKQjQcXhR1gvrPGWxagxFw2x1oQfdKeYbGHZrcEGDAB:outer:2",
+      "source": "386gN9eEFFMeMEA9tnZ5GjWe2EJ7dutDZP6ptKekUeBM",
+      "destination": "Df8iRwQUJUA4vnRrhDRcntee51JcCsxHH5ebj6MMsp8h",
+      "lamports": 85666998718,
+      "sol": "85.666998718",
+      "timestamp": 1793897996,
+      "date_utc": "2026-11-05T16:59:56+00:00",
+      "slot": 465781728,
+      "signature": "5oiha9jrzEGn3p7YTFHfUzrGTv2ajCGzasX8kCxzZNV3jeKQjQcXhR1gvrPGWxagxFw2x1oQfdKeYbGHZrcEGDAB",
+      "instruction_position": "outer:2"
+    },
+    {
+      "transfer_id": "5ouknacHuFMTkbHPFB5rfeKukoHgzhFN3nKrcMRksKxDhPsRJbg6zBa8LUg9LaxbUybK84w165Dr5fRiXbhfmVFi:outer:2",
+      "source": "Df8iRwQUJUA4vnRrhDRcntee51JcCsxHH5ebj6MMsp8h",
+      "destination": "614vb7eQjKS1siVCiB79z45DXeah3VoFDqQzxBLEda2f",
+      "lamports": 85666993715,
+      "sol": "85.666993715",
+      "timestamp": 1793897996,
+      "date_utc": "2026-11-05T16:59:56+00:00",
+      "slot": 465781729,
+      "signature": "5ouknacHuFMTkbHPFB5rfeKukoHgzhFN3nKrcMRksKxDhPsRJbg6zBa8LUg9LaxbUybK84w165Dr5fRiXbhfmVFi",
+      "instruction_position": "outer:2"
+    }
+  ]
+}
